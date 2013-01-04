@@ -1,0 +1,252 @@
+<html>
+<head>
+<title>Panagora bottle game</title>
+<script type="text/javascript">
+	var x = 0;
+	var y = 0;
+	var dv = 2;
+	var forgroundCtx;
+	var file = "bottle.png";
+
+	var img = new Image();
+	img.src = file;
+
+	var mx = 0;
+	var forgroundCtx;
+	var backgroundCtx;
+	var backgroundCanvas = document.createElement("canvas");
+	var srcCanvas = document.createElement("canvas");
+	var accAngle = 0;
+	var angle = 0;
+	var deltaAngle = 0.005;
+
+	function init(){
+
+		backgroundCanvas.width = 500;//img.width;
+		backgroundCanvas.height = 500;//img.height;
+		backgroundCanvas.style.position = "absolute";
+		backgroundCanvas.style.left = "0px";
+		angle -= deltaAngle;
+
+		srcCanvas.width = img.width;
+		srcCanvas.height = img.height;
+		srcCanvas.style.position = "absolute";
+		srcCanvas.style.left = "180px";
+		srcCanvas.style.top = "180px";
+
+		document.getElementById('container').appendChild(backgroundCanvas);
+		document.getElementById('container').appendChild(srcCanvas);
+
+		forgroundCtx = srcCanvas.getContext("2d");
+		backgroundCtx = backgroundCanvas.getContext("2d");
+
+		backgroundCtx.drawImage(img, 0, 0);
+		forgroundCtx.drawImage(img, 50, -50 );
+
+		forgroundCtx.translate(img.width/2, img.height/2);
+		draws();
+	}
+
+	var keyValue = 0;
+	var bubbel = 5;
+	var go = 200;
+
+	document.onkeydown = function(e) {
+		var e = window.event || e;
+		if (e.keyCode == 39 && angle < 0.3)
+			keyValue = 39;
+		else if (e.keyCode == 37  && angle > -0.3 )
+			keyValue = 37;
+		else if (e.keyCode == 38)
+			bubbel--;
+		else if (e.keyCode == 40)
+			bubbel++;
+		go = 50;
+    }
+
+    var A = function() {
+      console.log('x');
+    };
+
+    A.x = function() {
+      console.log('function');
+    };
+
+	A.prototype.x = function() {
+		console.log('prototype');
+	};
+
+	var B = new A();
+
+	function drawCircle(radius, x, y) {
+
+		/*A();
+		B.x();
+		A.x();*/
+		backgroundCtx.strokeStyle = "rgba(0,0,0," + 1/radius  + ")"
+		backgroundCtx.beginPath();
+		backgroundCtx.arc(x, y, radius/3 + 2, 0, Math.PI * 2, true);
+		backgroundCtx.closePath();
+		backgroundCtx.stroke();
+		//backgroundCtx.save();
+    }
+
+	document.onkeyup = function(e){
+		var e = window.event || e;
+		keyValue = 0;
+		go = 0;
+	}
+
+	var circleParam = {
+		radius : 0,
+		frameCount : 0,
+		x : 0,
+		y : 0,
+		array : []
+	}
+
+    function draws() {
+		switch(keyValue) {
+			case 39: angle += deltaAngle; break;
+			case 37: angle -= deltaAngle; break;
+			case 0: break;
+		}
+
+		dv = 20 / bubbel;
+
+		forgroundCtx.clearRect(0,0,800,800);
+		backgroundCtx.clearRect(0,0,800,800);//(0,0,img.width,img.height)
+
+		circleParam.frameCount++;
+
+		x += Math.round(-dv * Math.sin(accAngle));
+		y += Math.round(dv * Math.cos(accAngle));
+		accAngle += angle;
+		forgroundCtx.drawImage(img, -img.width / 2 + Math.random() * 0, -img.height / 2 + Math.random() * 0 );
+		forgroundCtx.rotate( angle );
+
+		var ax = 232 + 60 * Math.cos(accAngle + Math.PI * 1.5);
+		var ay = 222 + 60 * Math.sin(accAngle + Math.PI * 1.5);
+		var bx = 232 + 60 * Math.cos(accAngle + Math.PI / 2);
+		var by = 222 + 60 * Math.sin(accAngle + Math.PI / 2);
+
+		backgroundCtx.strokeStyle = "rgba(0,0,0,1)"
+		backgroundCtx.beginPath();
+		backgroundCtx.moveTo( ax, ay );
+		backgroundCtx.lineTo( bx, by );
+		backgroundCtx.closePath();
+
+		backgroundCtx.moveTo(x,y);
+		backgroundCtx.lineTo(x + 1250, y + 1250);
+		//backgroundCtx.closePath();
+		backgroundCtx.stroke();
+
+		//cross(x,x+1250,y,y+1250,ax,bx,ay,by);
+		var vectors = [
+			new vector([ new point(ax,ay), new point(bx,by)]),
+			new vector([ new point(x,y), new point(x + 1250, y + 1250)])
+		];
+
+		collision(vectors);
+
+		backgroundCtx.drawImage(img, x, y);
+
+		if (go != 0) {
+			circleParam.x = 230 + (3 - Math.random()*6) + (/*circleParam.frameCount+*/50)* Math.cos(accAngle+Math.PI / 2);
+			circleParam.y = 230 + (3 - Math.random()*6) + (/*circleParam.frameCount+*/50)*Math.sin(accAngle+Math.PI / 2);
+			circleParam.array.push( [circleParam.x, circleParam.y, Math.cos(accAngle+Math.PI/2 + 0.25 - Math.random() / 2), Math.sin(accAngle+Math.PI/2) + 0.25 - Math.random()/2,  Math.random()*3] );
+
+		if (circleParam.array.length > 20 )
+			circleParam.array.shift();
+		}
+
+		for( var i in circleParam.array ) {
+			circleParam.array[i][0] += circleParam.array[i][2] - dv * Math.sin(accAngle);
+			circleParam.array[i][1] += circleParam.array[i][3] + dv * Math.cos(accAngle);
+			circleParam.array[i][4]++;
+			drawCircle( circleParam.array[i][4], circleParam.array[i][0], circleParam.array[i][1] );
+		}
+		//return setInterval(function(){draws()}, 10);
+		setTimeout( function() { draws() }, 30 );
+    }
+
+	function point(x,y) {
+		this.x = x;
+		this.y = y;
+	}
+
+    function vector(points) {
+		this.points = points;
+		this.k = (points[0].y - points[1].y) / (points[0].x - points[1].x);
+		this.m = points[0].y - this.k * points[0].x;
+    }
+
+    function vectorCollection(vector) {
+		this.vectors = vector;
+    }
+
+    function collision(vectors) {
+
+		var diff = vectors[0].k - vectors[1].k;
+
+		if ( diff === 0 ) return;
+
+		var x = (vectors[1].m - vectors[0].m) / diff;
+		var y = vectors[0].k * x + vectors[0].m;
+
+		if( x < 0 || y < 0 ) {
+			return;
+		} else if (
+			((vectors[0].points[0].y > y && vectors[0].points[1].y < y) ||
+			(vectors[0].points[0].y < y && vectors[0].points[1].y > y)) &&
+			((vectors[1].points[0].x < x && vectors[1].points[1].x > x) ||
+			(vectors[1].points[0].x < x && vectors[1].points[1].x > x))
+		) {
+			backgroundCtx.strokeStyle = "rgba(255,0,0,1)";
+			console.log(vectors[0].points[0].y);
+		} else {
+			backgroundCtx.strokeStyle = "rgba(0,0,0,1)";
+		}
+		backgroundCtx.beginPath();
+		backgroundCtx.arc(x, y, 30, 0, Math.PI * 2, true);
+		backgroundCtx.closePath();
+		backgroundCtx.stroke();
+    }
+
+	// shim layer with setTimeout fallback
+	/*window.requestAnimFrame = (function(){
+
+	// draw();
+
+	return window.requestAnimationFrame   ||
+		window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame    ||
+		window.oRequestAnimationFrame      ||
+		window.msRequestAnimationFrame     ||
+	function( callback ){
+	window.setTimeout(callback, 1000 / 60);
+	};
+	})();
+
+	// usage:
+	// instead of setInterval(render, 16) ....
+
+	(function animloop(){
+	requestAnimFrame(animloop);
+	draws();
+	})();*/
+
+
+    // place the rAF *before* the render() to assure as close to
+    // 60fps with the setTimeout fallback.
+
+	</script>
+<style textype="text/css">
+	canvas { border: 1px dashed black; }
+</style>
+</head>
+<body onload="init();">
+	<div id="container" width="800" height="800"></div>
+	<!-- <canvas id="tutorial" width="800" height="600"></canvas>   -->
+</body>
+</html>
