@@ -40,8 +40,8 @@
 		forgroundCtx = srcCanvas.getContext("2d");
 		backgroundCtx = backgroundCanvas.getContext("2d");
 
-		backgroundCtx.drawImage(img, 0, 0);
-		forgroundCtx.drawImage(img, 50, -50 );
+		/*backgroundCtx.drawImage(img, 0, 0);
+		forgroundCtx.drawImage(img, 50, -50 );*/
 
 		forgroundCtx.translate(img.width/2, img.height/2);
 		draws();
@@ -57,10 +57,12 @@
 			keyValue = 39;
 		else if (e.keyCode == 37  && angle > -0.3 )
 			keyValue = 37;
-		else if (e.keyCode == 38)
-			bubbel--;
+		else if (e.keyCode == 38) {
+			if( bubbel > 2 ) bubbel--;
+		}
 		else if (e.keyCode == 40)
 			bubbel++;
+
 		go = 50;
     }
 
@@ -113,9 +115,9 @@
 		}
 
 		dv = 20 / bubbel;
-
-		forgroundCtx.clearRect(0,0,800,800);
-		backgroundCtx.clearRect(0,0,800,800);//(0,0,img.width,img.height)
+		console.log(dv);
+		backgroundCtx.clearRect(0,0,600,600);//(0,0,img.width,img.height)
+		forgroundCtx.clearRect( -100, -100, 200, 200);
 
 		circleParam.frameCount++;
 
