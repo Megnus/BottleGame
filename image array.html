@@ -1,0 +1,61 @@
+<html>
+<head>
+<style type="text/css">
+</style>
+</head>
+<meta charset="UTF-8">
+
+
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+
+	$(document).ready(function() {
+
+
+		// Handler for .ready() called.
+
+		for (var i = 1; i < 111; i++ )
+			images.push( i.toString() + ".png");
+
+
+
+	});
+
+
+	var images = [];
+	var index = 0;
+	var adder = 1;
+
+	window.setInterval(function() {
+		index += adder;
+		if ( index == 0 || index == 100 ) adder *= -1;
+		$("img").attr("src", "bottle/" + index.toString() + ".png" );
+		console.log($("img"));
+
+	}, 10);
+
+	// var $img = $("img"), i = 0, speed = 200;
+
+	// var mew = window.setInterval(function() {
+	// 	$img.fadeOut(speed, function() {
+	// 	$img.attr("src", images[(++i % images.length)]);
+	// 	$img.fadeIn(speed);, 3000);
+	// 	}
+	// });
+
+	(function( $ ) {
+
+		$.fn.myPlugin = function() {
+
+			// Do your awesome plugin stuff here
+		};
+
+	})( jQuery );
+
+</script>
+
+<body>
+	<img border="0" src="bottle/1.png" alt="Pulpit rock" width="304" height="228">
+</body>
+</html>
