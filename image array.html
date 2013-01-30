@@ -16,24 +16,37 @@
 		// Handler for .ready() called.
 
 		for (var i = 1; i < 111; i++ )
-			images.push( i.toString() + ".png");
+			images.push( "images/" + i.toString() + ".png");
 
+		//preloads = "red.gif,green.gif,blue.gif".split(",")
 
-
+		for( var x = 0; x < images.length; x++ ) {
+			tempImg[x] = new Image()
+			tempImg[x].src = images[x]
+		}
 	});
 
+	var tempImg = [];
 
 	var images = [];
 	var index = 0;
 	var adder = 1;
 
-	window.setInterval(function() {
-		index += adder;
-		if ( index == 0 || index == 100 ) adder *= -1;
-		$("img").attr("src", "bottle/" + index.toString() + ".png" );
-		console.log($("img"));
+	window.setInterval( function() {
 
-	}, 10);
+		$("#preloader").attr({src: tempImg[index].src});
+
+		//console.log(tempImg[index].src);
+
+		index += adder;
+
+		if ( index == 0 || index == 100 ) adder *= -1;
+
+		$("#plain").attr("src", "images/" + index.toString() + ".png" );
+
+		//console.log($("img"));
+
+	}, 1);
 
 	// var $img = $("img"), i = 0, speed = 200;
 
@@ -56,6 +69,7 @@
 </script>
 
 <body>
-	<img border="0" src="bottle/1.png" alt="Pulpit rock" width="304" height="228">
+	<img id="plain" border="0" src="bottle/1.png" alt="Pulpit rock" width="304" height="228">
+	<img id="preloader" border="0" src="bottle/1.png" alt="Pulpit rock" width="304" height="228">
 </body>
 </html>
